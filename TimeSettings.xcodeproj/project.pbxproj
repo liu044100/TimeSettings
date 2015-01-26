@@ -8,11 +8,11 @@
 
 /* Begin PBXBuildFile section */
 		B79F53EA1A760E1800328CF4 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = B79F53E91A760E1800328CF4 /* AppDelegate.swift */; };
-		B79F53EC1A760E1800328CF4 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B79F53EB1A760E1800328CF4 /* ViewController.swift */; };
 		B79F53EF1A760E1800328CF4 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = B79F53ED1A760E1800328CF4 /* Main.storyboard */; };
 		B79F53F11A760E1800328CF4 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B79F53F01A760E1800328CF4 /* Images.xcassets */; };
 		B79F53F41A760E1800328CF4 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = B79F53F21A760E1800328CF4 /* LaunchScreen.xib */; };
 		B79F54001A760E1900328CF4 /* TimeSettingsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B79F53FF1A760E1900328CF4 /* TimeSettingsTests.swift */; };
+		B79F540A1A760EFE00328CF4 /* SettingsTableVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = B79F54091A760EFE00328CF4 /* SettingsTableVC.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -29,13 +29,13 @@
 		B79F53E41A760E1800328CF4 /* TimeSettings.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TimeSettings.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		B79F53E81A760E1800328CF4 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		B79F53E91A760E1800328CF4 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		B79F53EB1A760E1800328CF4 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
 		B79F53EE1A760E1800328CF4 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		B79F53F01A760E1800328CF4 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		B79F53F31A760E1800328CF4 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/LaunchScreen.xib; sourceTree = "<group>"; };
 		B79F53F91A760E1900328CF4 /* TimeSettingsTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = TimeSettingsTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		B79F53FE1A760E1900328CF4 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		B79F53FF1A760E1900328CF4 /* TimeSettingsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeSettingsTests.swift; sourceTree = "<group>"; };
+		B79F54091A760EFE00328CF4 /* SettingsTableVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettingsTableVC.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -78,7 +78,7 @@
 			isa = PBXGroup;
 			children = (
 				B79F53E91A760E1800328CF4 /* AppDelegate.swift */,
-				B79F53EB1A760E1800328CF4 /* ViewController.swift */,
+				B79F54091A760EFE00328CF4 /* SettingsTableVC.swift */,
 				B79F53ED1A760E1800328CF4 /* Main.storyboard */,
 				B79F53F01A760E1800328CF4 /* Images.xcassets */,
 				B79F53F21A760E1800328CF4 /* LaunchScreen.xib */,
@@ -212,7 +212,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				B79F53EC1A760E1800328CF4 /* ViewController.swift in Sources */,
+				B79F540A1A760EFE00328CF4 /* SettingsTableVC.swift in Sources */,
 				B79F53EA1A760E1800328CF4 /* AppDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -407,6 +407,7 @@
 				B79F54051A760E1900328CF4 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		B79F54061A760E1900328CF4 /* Build configuration list for PBXNativeTarget "TimeSettingsTests" */ = {
 			isa = XCConfigurationList;
@@ -415,6 +416,7 @@
 				B79F54081A760E1900328CF4 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
