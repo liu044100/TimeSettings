@@ -45,15 +45,16 @@ class SettingsTableVC: UITableViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        self.dataArray = [SettingItem(title: "起床", date: NSDate()),
-                     SettingItem(title: "出社", date: NSDate()),
-                     SettingItem(title: "昼休み", date: NSDate()),
-                     SettingItem(title: "退社", date: NSDate()),
-                     SettingItem(title: "就寝", date: NSDate())]
-        
-        
+        self.dateFormatter.dateFormat = "HH:mm"
         self.dateFormatter.dateStyle = NSDateFormatterStyle.NoStyle
         self.dateFormatter.timeStyle = NSDateFormatterStyle.ShortStyle
+        
+        self.dataArray = [SettingItem(title: "起床", date: self.dateFormatter.dateFromString("08:00")!),
+                          SettingItem(title: "出社", date: self.dateFormatter.dateFromString("09:30")!),
+                          SettingItem(title: "昼休み", date: self.dateFormatter.dateFromString("12:10")!),
+                          SettingItem(title: "退社", date: self.dateFormatter.dateFromString("18:30")!),
+                          SettingItem(title: "就寝", date: self.dateFormatter.dateFromString("23:30")!)]
+        
         
      
         let dateCell = self.tableView.dequeueReusableCellWithIdentifier(kDateCellID) as UITableViewCell
@@ -77,16 +78,22 @@ class SettingsTableVC: UITableViewController {
 //MARK: utility method
 extension SettingsTableVC{
     @IBAction func dateAciton(sender: AnyObject) {
-        var targetedCellIndexPath: NSIndexPath = NSIndexPath(forRow: self.datePickerIndexPath!.row - 1, inSection: 0)
         
+        var targetedCellIndexPath: NSIndexPath?
         
-        let cell = self.tableView.cellForRowAtIndexPath(targetedCellIndexPath)
+        if self.hasInlineDatePicker(){
+            targetedCellIndexPath = NSIndexPath(forRow: self.datePickerIndexPath!.row - 1, inSection: 0)
+        }
         
-        let datePicker = sender as UIDatePicker
-        
-        self.dataArray[targetedCellIndexPath.row].date = datePicker.date
-        
-        cell?.detailTextLabel?.text = self.dateFormatter.stringFromDate(self.dataArray[targetedCellIndexPath.row].date)
+        if targetedCellIndexPath != nil {
+            let cell = self.tableView.cellForRowAtIndexPath(targetedCellIndexPath!)
+            
+            let datePicker = sender as UIDatePicker
+            
+            self.dataArray[targetedCellIndexPath!.row].date = datePicker.date
+            
+            cell?.detailTextLabel?.text = self.dateFormatter.stringFromDate(self.dataArray[targetedCellIndexPath!.row].date)
+        }
         
     }
     
@@ -118,7 +125,7 @@ extension SettingsTableVC{
             if let datePicker = datePickerBuffer as? UIDatePicker{
                 let itemData = self.dataArray[self.datePickerIndexPath!.row - 1]
                 
-                datePicker.setDate(itemData.date, animated: true)
+                datePicker.setDate(itemData.date, animated: false)
             }
             
         }
@@ -163,9 +170,6 @@ extension SettingsTableVC{
             self.datePickerIndexPath = nil
     
         }
-        
-        
-        
         
         
         if !sameCellClicked {
