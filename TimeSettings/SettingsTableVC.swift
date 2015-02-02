@@ -11,17 +11,44 @@ import UIKit
 let kCellID = "cell"
 let kDateCellID = "datePicker"
 let kWeekCellID = "week"
+let kWeekdaysCellID = "weekdays"
+let kCollectionCellID = "weekdaysC"
 
 let kDatePickerTag = 99
+let kDatePickerHeight: CGFloat = 216
 
 let kTitleKey = "title"
 let kDateKey = "date"
+
+enum Weekday: Int {
+    case MON = 0, TUE, WED, THU, FRI, SAT, SUN
+    
+    func description() -> String{
+        switch self{
+        case .MON:
+            return "月"
+        case .TUE:
+            return "火"
+        case .WED:
+            return "水"
+        case .THU:
+            return "木"
+        case .FRI:
+            return "金"
+        case .SAT:
+            return "土"
+        case .SUN:
+            return "日"
+        }
+    }
+}
 
 struct SettingItem {
     
     var title: String
     
     var date: NSDate
+
 }
 
 class SettingsTableVC: UITableViewController {
@@ -32,11 +59,17 @@ class SettingsTableVC: UITableViewController {
     
     var dataArray = [SettingItem]()
     
-    var dateCellRowHeight: CGFloat = 0
+    var dateCellRowHeight: CGFloat = kDatePickerHeight
     
     var datePickerIndexPath: NSIndexPath?
     
+    var weekdaysCellIndexPath: NSIndexPath?
+    
     let dateFormatter = NSDateFormatter()
+    
+    var weekdays: [Weekday] = [.SAT, .SUN]
+    
+    let allWeekdays: [Weekday] = [.MON, .TUE, .WED, .THU, .FRI, .SAT, .SUN]
     
     deinit{
         NSNotificationCenter.defaultCenter().removeObserver(self)
@@ -54,16 +87,7 @@ class SettingsTableVC: UITableViewController {
                           SettingItem(title: "昼休み", date: self.dateFormatter.dateFromString("12:10")!),
                           SettingItem(title: "退社", date: self.dateFormatter.dateFromString("18:30")!),
                           SettingItem(title: "就寝", date: self.dateFormatter.dateFromString("23:30")!)]
-        
-        
-     
-        let dateCell = self.tableView.dequeueReusableCellWithIdentifier(kDateCellID) as UITableViewCell
-        
-        self.dateCellRowHeight = 216
-        
-        println("dateCell -> \(dateCell)")
-        
-        println("dateCellRowHeight -> \(self.dateCellRowHeight)")
+
         
         NSNotificationCenter.defaultCenter().addObserver(self, selector: Selector("localChanged:"), name: NSCurrentLocaleDidChangeNotification, object: nil)
     }
@@ -101,8 +125,16 @@ extension SettingsTableVC{
         return self.datePickerIndexPath != nil
     }
     
+    func hasInlineWeekdays() -> Bool{
+        return self.weekdaysCellIndexPath != nil
+    }
+    
     func indexPathHasPicker(indexPath: NSIndexPath) -> Bool{
         return self.hasInlineDatePicker() && self.datePickerIndexPath!.row == indexPath.row
+    }
+    
+    func indexPathHasWeekdays(indexPath: NSIndexPath) -> Bool{
+        return self.hasInlineWeekdays() && self.weekdaysCellIndexPath!.row == indexPath.row
     }
     
     func indexPathHasDate(indexPath: NSIndexPath) -> Bool{
@@ -131,8 +163,21 @@ extension SettingsTableVC{
         }
         
     }
+
     
     func toggleDatePickerForSelectedIndexPath(indexPath: NSIndexPath){
+        self.tableView.beginUpdates()
+        
+        let targetIndexPath = NSIndexPath(forRow: indexPath.row + 1, inSection: 0)
+        
+        let indexPaths = [targetIndexPath]
+        
+        self.tableView.insertRowsAtIndexPaths(indexPaths, withRowAnimation: UITableViewRowAnimation.Fade)
+        
+        self.tableView.endUpdates()
+    }
+    
+    func toggleWeekdaysForSelectedIndexPath(indexPath: NSIndexPath){
         self.tableView.beginUpdates()
         
         let targetIndexPath = NSIndexPath(forRow: indexPath.row + 1, inSection: 0)
@@ -152,6 +197,16 @@ extension SettingsTableVC{
         
         var before: Bool = false
         
+        //already has weekdays
+        if self.hasInlineWeekdays(){
+            self.tableView.deleteRowsAtIndexPaths([self.weekdaysCellIndexPath!], withRowAnimation: UITableViewRowAnimation.Fade)
+            
+            println("remove weekdaysIndexPath -> \(self.weekdaysCellIndexPath!.row)")
+            
+            self.weekdaysCellIndexPath = nil
+            
+        }
+        
         if self.hasInlineDatePicker(){
             before = self.datePickerIndexPath!.row < indexPath.row
             
@@ -160,12 +215,13 @@ extension SettingsTableVC{
             println("indexPath -> \(indexPath.row)")
         }
         
+        
         //already has picker
         if self.hasInlineDatePicker(){
 
             self.tableView.deleteRowsAtIndexPaths([self.datePickerIndexPath!], withRowAnimation: UITableViewRowAnimation.Fade)
             
-            println("datePickerIndexPath -> \(self.datePickerIndexPath!.row)")
+            println("remove datePickerIndexPath -> \(self.datePickerIndexPath!.row)")
         
             self.datePickerIndexPath = nil
     
@@ -190,9 +246,49 @@ extension SettingsTableVC{
         self.updateDatePicker()
         
     }
+    
+    
+    func displayWeekdaysForRowAtIndexPath(indexPath: NSIndexPath){
+        
+        self.tableView.beginUpdates()
+        
+        var realIndexPath = NSIndexPath(forRow: indexPath.row, inSection: 0)
+        
+        //already has picker
+        if self.hasInlineDatePicker(){
+            
+            self.tableView.deleteRowsAtIndexPaths([self.datePickerIndexPath!], withRowAnimation: UITableViewRowAnimation.Fade)
+            
+            println("remove datePickerIndexPath -> \(self.datePickerIndexPath!.row)")
+            
+            self.datePickerIndexPath = nil
+            
+            realIndexPath = NSIndexPath(forRow: indexPath.row - 1, inSection: 0)
+        }
+        
+        
+        if self.hasInlineWeekdays(){
+            self.tableView.deleteRowsAtIndexPaths([self.weekdaysCellIndexPath!], withRowAnimation: UITableViewRowAnimation.Fade)
+            
+            println("remove weekdaysIndexPath -> \(self.weekdaysCellIndexPath!.row)")
+            
+            self.weekdaysCellIndexPath = nil
+
+        }else{
+            
+            self.weekdaysCellIndexPath = NSIndexPath(forRow: realIndexPath.row + 1, inSection: 0)
+            
+            self.toggleWeekdaysForSelectedIndexPath(realIndexPath)
+        }
+        
+        
+        self.tableView.deselectRowAtIndexPath(indexPath, animated: true)
+        self.tableView.endUpdates()
+
+    }
 }
 
-
+//MARK: UITableViewDataSource
 extension SettingsTableVC: UITableViewDataSource{
 
     
@@ -202,7 +298,7 @@ extension SettingsTableVC: UITableViewDataSource{
     
     override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         
-        if self.hasInlineDatePicker(){
+        if self.hasInlineDatePicker() || self.hasInlineWeekdays() {
             return self.dataArray.count + 1 + 1
         }
         
@@ -217,6 +313,8 @@ extension SettingsTableVC: UITableViewDataSource{
             cellID = kDateCellID
         }else if self.indexPathHasDate(indexPath){
             cellID = kCellID
+        }else if self.indexPathHasWeekdays(indexPath){
+            cellID = kWeekdaysCellID
         }
         
         var cell = tableView.dequeueReusableCellWithIdentifier(cellID) as UITableViewCell
@@ -233,20 +331,27 @@ extension SettingsTableVC: UITableViewDataSource{
             
         }else if cellID == kWeekCellID{
             cell.textLabel?.text = "休日"
+            
+            cell.detailTextLabel?.text =  weekdays.reduce(""){
+                (detailString: String, weekday: Weekday) in
+                return countElements(detailString) == 0 ? "\(weekday.description())" : "\(detailString),\(weekday.description())"
+            }
         }
         
         return cell
     }
     
+    
     override func tableView(tableView: UITableView, heightForRowAtIndexPath indexPath:
         NSIndexPath) -> CGFloat {
-        
-            println("dateCellRowHeight -> \(self.dateCellRowHeight)")
             
-            return self.indexPathHasPicker(indexPath) ? self.dateCellRowHeight : self.tableView.rowHeight
+            println("row height \(self.tableView.rowHeight)")
+
+            return self.indexPathHasPicker(indexPath) ? self.dateCellRowHeight : 44
     }
 }
 
+//MARK: UITableViewDelegate
 extension SettingsTableVC: UITableViewDelegate{
     
     override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
@@ -255,8 +360,37 @@ extension SettingsTableVC: UITableViewDelegate{
         
         if cell?.reuseIdentifier == kCellID{
             self.displayInlineDatePickerForRowAtIndexPath(indexPath)
-        }else{
+        }else if cell?.reuseIdentifier == kWeekCellID{
+            self.displayWeekdaysForRowAtIndexPath(indexPath)
+        }
+        else{
             tableView.deselectRowAtIndexPath(indexPath, animated: true)
         }
     }
+}
+
+//MARK: UICollectionViewDataSource
+extension SettingsTableVC: UICollectionViewDataSource{
+    
+    func numberOfSectionsInCollectionView(collectionView: UICollectionView) -> Int {
+        return 1
+    }
+    
+    func collectionView(collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        return allWeekdays.count
+    }
+    
+    func collectionView(collectionView: UICollectionView, cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell {
+        
+        let cell: AnyObject = collectionView.dequeueReusableCellWithReuseIdentifier(kCollectionCellID, forIndexPath:indexPath)
+        
+        if let label = cell.viewWithTag(100) as? UILabel{
+            label.text = allWeekdays[indexPath.row].description()
+        }
+        
+        
+        return cell as UICollectionViewCell
+        
+    }
+
 }

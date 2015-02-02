@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>IDESourceControlProjectFavoriteDictionaryKey</key>
+	<false/>
+	<key>IDESourceControlProjectIdentifier</key>
+	<string>AD99651D-5D8A-4C5A-9EB7-46A77BBB268B</string>
+	<key>IDESourceControlProjectName</key>
+	<string>TimeSettings</string>
+	<key>IDESourceControlProjectOriginsDictionary</key>
+	<dict>
+		<key>BAA0C634A79F729DA782971DB5981E582FCC0ED1</key>
+		<string>https://github.com/liu044100/TimeSettings.git</string>
+	</dict>
+	<key>IDESourceControlProjectPath</key>
+	<string>TimeSettings.xcodeproj</string>
+	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
+	<dict>
+		<key>BAA0C634A79F729DA782971DB5981E582FCC0ED1</key>
+		<string>../..</string>
+	</dict>
+	<key>IDESourceControlProjectURL</key>
+	<string>https://github.com/liu044100/TimeSettings.git</string>
+	<key>IDESourceControlProjectVersion</key>
+	<integer>111</integer>
+	<key>IDESourceControlProjectWCCIdentifier</key>
+	<string>BAA0C634A79F729DA782971DB5981E582FCC0ED1</string>
+	<key>IDESourceControlProjectWCConfigurations</key>
+	<array>
+		<dict>
+			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
+			<string>public.vcs.git</string>
+			<key>IDESourceControlWCCIdentifierKey</key>
+			<string>BAA0C634A79F729DA782971DB5981E582FCC0ED1</string>
+			<key>IDESourceControlWCCName</key>
+			<string>TimeSettings</string>
+		</dict>
+	</array>
+</dict>
+</plist>
