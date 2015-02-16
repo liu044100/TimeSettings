@@ -9,13 +9,18 @@
 import UIKit
 
 @UIApplicationMain
+
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
     var window: UIWindow?
 
-
+    
     func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool {
         // Override point for customization after application launch.
+        self.window?.tintColor = UIColor(red: 74.0/255.0, green: 171.0/255.0, blue: 247.0/255.0, alpha: 1.0)
+        
+        println("globalTintColor -> \(self.window?.tintColor)")
+        
         return true
     }
 

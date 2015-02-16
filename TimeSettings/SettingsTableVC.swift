@@ -14,6 +14,9 @@ let kWeekCellID = "week"
 let kWeekdaysCellID = "weekdays"
 let kCollectionCellID = "weekdaysC"
 
+let appDelegate = UIApplication.sharedApplication().delegate as AppDelegate
+let globalTintColor = appDelegate.window!.tintColor
+
 let kDatePickerTag = 99
 
 let kTitleKey = "title"
@@ -56,18 +59,21 @@ class SettingsTableVC: UITableViewController {
         return dataArray.count
     }
     
-    var dataArray = [SettingItem]()
+    var dataArray: [SettingItem]!
     
     var dateCellRowHeight: CGFloat = 216
+    
     var datePickerIndexPath: NSIndexPath?
     
     var weekdaysCellIndexPath: NSIndexPath?
     
-    let dateFormatter = NSDateFormatter()
+    var selectedIndexPaths: [NSIndexPath]!
     
-    var weekdays: [Weekday] = [.SAT, .SUN]
+    var weekDaysData: [Weekday]!
     
     let allWeekdays: [Weekday] = [.MON, .TUE, .WED, .THU, .FRI, .SAT, .SUN]
+    
+    let dateFormatter = NSDateFormatter()
     
     deinit{
         NSNotificationCenter.defaultCenter().removeObserver(self)
@@ -85,8 +91,9 @@ class SettingsTableVC: UITableViewController {
                           SettingItem(title: "昼休み", date: self.dateFormatter.dateFromString("12:10")!),
                           SettingItem(title: "退社", date: self.dateFormatter.dateFromString("18:30")!),
                           SettingItem(title: "就寝", date: self.dateFormatter.dateFromString("23:30")!)]
-
-
+        
+        
+        self.weekDaysData = [.SAT, .SUN]
         
         NSNotificationCenter.defaultCenter().addObserver(self, selector: Selector("localChanged:"), name: NSCurrentLocaleDidChangeNotification, object: nil)
     }
@@ -336,6 +343,8 @@ extension SettingsTableVC: UITableViewDataSource{
         }
         
         var cell = tableView.dequeueReusableCellWithIdentifier(cellID) as UITableViewCell
+
+        cell.detailTextLabel?.textColor = globalTintColor
         
         println("cellForRowAtIndexPath -> \(indexPath.row), cellID -> \(cellID)")
         
@@ -362,13 +371,34 @@ extension SettingsTableVC: UITableViewDataSource{
         }else if cellID == kWeekCellID{
             cell.textLabel?.text = "休日"
             
-            cell.detailTextLabel?.text =  weekdays.reduce(""){
+            weekDaysData.sort{$0.rawValue < $1.rawValue}
+            
+            cell.detailTextLabel?.text =  weekDaysData.reduce(""){
                 (detailString: String, weekday: Weekday) in
                 return countElements(detailString) == 0 ? "\(weekday.description())" : "\(detailString),\(weekday.description())"
             }
+            
+            println("cell.detailTextLabel -> \(cell.detailTextLabel?.text)")
         }
         
         return cell
+    }
+    
+    
+    func updateWeekCell(){
+        let visibeCells = self.tableView.visibleCells() as [UITableViewCell]
+        
+        let weekCellArray = visibeCells.filter{
+            $0.reuseIdentifier == kWeekCellID
+        }
+        
+        let indexPaths = weekCellArray.map{self.tableView.indexPathForCell($0)!}
+        
+        if indexPaths.count > 0 {
+            self.tableView.beginUpdates()
+            self.tableView.reloadRowsAtIndexPaths(indexPaths, withRowAnimation: .None)
+            self.tableView.endUpdates()
+        }
     }
     
     
@@ -410,16 +440,98 @@ extension SettingsTableVC: UICollectionViewDataSource{
     
     func collectionView(collectionView: UICollectionView, cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell {
         
-        let cell: AnyObject = collectionView.dequeueReusableCellWithReuseIdentifier(kCollectionCellID, forIndexPath:indexPath)
-        
-        if let label = cell.viewWithTag(100) as? UILabel{
-            label.text = allWeekdays[indexPath.row].description()
+        if !collectionView.allowsMultipleSelection{
+            collectionView.allowsMultipleSelection = true
         }
         
+        let cell = collectionView.dequeueReusableCellWithReuseIdentifier(kCollectionCellID, forIndexPath:indexPath) as UICollectionViewCell
+        
         cell.layer.cornerRadius = 5.0
+        cell.layer.borderWidth = 2.0
+        cell.layer.borderColor = UIColor.lightGrayColor().CGColor
+        
+        //self weekDay
+        var cellWeekDay = allWeekdays[indexPath.row]
+        
+        if let label = cell.viewWithTag(100) as? UILabel{
+            label.text = cellWeekDay.description()
+            
+            for objc in weekDaysData{
+                if cellWeekDay == objc{
+                    selectedStyleForCell(cell)
+                }
+            }
+
+        }
+        
         
         return cell as UICollectionViewCell
         
     }
+    
+    
+    func selectedStyleForCell(cell: UICollectionViewCell){
+        cell.layer.borderColor = globalTintColor.CGColor
+        if let label = cell.viewWithTag(100) as? UILabel{
+            label.textColor = globalTintColor
+        }
+    }
+    
+    func unselectedStyleForCell(cell: UICollectionViewCell){
+        cell.layer.borderColor = UIColor.lightGrayColor().CGColor
+        if let label = cell.viewWithTag(100) as? UILabel{
+            label.textColor = UIColor.lightGrayColor()
+        }
+    }
 
+}
+
+//MARK: UICollectionViewDelegate
+extension SettingsTableVC: UICollectionViewDelegate{
+    
+    func collectionView(collectionView: UICollectionView, didSelectItemAtIndexPath indexPath: NSIndexPath) {
+        let cell = collectionView.cellForItemAtIndexPath(indexPath) as UICollectionViewCell!
+        let selectWeekday = allWeekdays[indexPath.row]
+        
+        //check for already selected
+        if contains(weekDaysData, selectWeekday){
+            
+            let containedIndexPath = NSIndexPath(forRow: selectWeekday.rawValue, inSection: 0)
+            
+            collectionView.deselectItemAtIndexPath(indexPath, animated: false)
+           
+            self.collectionView(collectionView, didDeselectItemAtIndexPath: containedIndexPath)
+            
+            return
+        }
+        
+        println("didSelectItemAtIndexPath -> \(indexPath.row)")
+        
+        selectedStyleForCell(cell)
+        
+        weekDaysData.append(selectWeekday)
+        
+        //update view
+        updateWeekCell()
+        
+        println("select weekDaysData -> \(weekDaysData.count), \(weekDaysData),\(selectWeekday.description())")
+        
+    }
+    
+    func collectionView(collectionView: UICollectionView, didDeselectItemAtIndexPath indexPath: NSIndexPath) {
+        println("didDeselectItemAtIndexPath -> \(indexPath.row)")
+        
+        let cell = collectionView.cellForItemAtIndexPath(indexPath) as UICollectionViewCell!
+        
+        unselectedStyleForCell(cell)
+        
+        let unselectWeekday = allWeekdays[indexPath.row]
+        
+        weekDaysData = weekDaysData.filter{ $0 != unselectWeekday}
+        
+        //update view
+        updateWeekCell()
+        
+        println("unselect weekDaysData -> \(weekDaysData.count), \(weekDaysData),\(unselectWeekday.description())")
+    }
 }
