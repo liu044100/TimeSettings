@@ -15,7 +15,6 @@ let kWeekdaysCellID = "weekdays"
 let kCollectionCellID = "weekdaysC"
 
 let kDatePickerTag = 99
-let kDatePickerHeight: CGFloat = 216
 
 let kTitleKey = "title"
 let kDateKey = "date"
@@ -59,8 +58,7 @@ class SettingsTableVC: UITableViewController {
     
     var dataArray = [SettingItem]()
     
-    var dateCellRowHeight: CGFloat = kDatePickerHeight
-    
+    var dateCellRowHeight: CGFloat = 216
     var datePickerIndexPath: NSIndexPath?
     
     var weekdaysCellIndexPath: NSIndexPath?
@@ -87,6 +85,7 @@ class SettingsTableVC: UITableViewController {
                           SettingItem(title: "昼休み", date: self.dateFormatter.dateFromString("12:10")!),
                           SettingItem(title: "退社", date: self.dateFormatter.dateFromString("18:30")!),
                           SettingItem(title: "就寝", date: self.dateFormatter.dateFromString("23:30")!)]
+
 
         
         NSNotificationCenter.defaultCenter().addObserver(self, selector: Selector("localChanged:"), name: NSCurrentLocaleDidChangeNotification, object: nil)
@@ -139,9 +138,28 @@ extension SettingsTableVC{
     
     func indexPathHasDate(indexPath: NSIndexPath) -> Bool{
         
-        if (0 <= indexPath.row && indexPath.row < kDataEndRow) ||  (self.hasInlineDatePicker() && indexPath.row == kDataEndRow + 1){
-            return true
+        if self.hasInlineDatePicker(){
+            
+            let pickerIndex = self.datePickerIndexPath!.row
+            
+            if pickerIndex == kDataEndRow {
+                if indexPath.row < kDataEndRow{
+                    return true
+                }
+            }else{
+                if indexPath.row != pickerIndex && indexPath.row != kDataEndRow + 1 {
+                    return true
+                }
+            }
+            
+        }else{
+        
+            if indexPath.row >= 0 && indexPath.row < kDataEndRow {
+                return true
+            }
+        
         }
+       
     
         return false
     }
@@ -319,13 +337,25 @@ extension SettingsTableVC: UITableViewDataSource{
         
         var cell = tableView.dequeueReusableCellWithIdentifier(cellID) as UITableViewCell
         
-        println("cellForRowAtIndexPath -> \(indexPath.row)")
+        println("cellForRowAtIndexPath -> \(indexPath.row), cellID -> \(cellID)")
+        
         
         if cellID == kCellID{
             
-            cell.textLabel?.text = self.dataArray[indexPath.row].title
+            var forDataSourceIndex = indexPath.row
             
-            let date = self.dataArray[indexPath.row].date
+            if self.hasInlineDatePicker(){
+                //has one picker, so data source index have to change
+                if self.datePickerIndexPath?.row < indexPath.row{
+                    forDataSourceIndex = indexPath.row - 1
+                }
+            }
+            
+            cell.textLabel?.text = self.dataArray[forDataSourceIndex].title
+            
+            println("cell.textLabel?.text -> \(cell.textLabel?.text)")
+            
+            let date = self.dataArray[forDataSourceIndex].date
             
             cell.detailTextLabel?.text = self.dateFormatter.stringFromDate(date)
             
@@ -344,8 +374,6 @@ extension SettingsTableVC: UITableViewDataSource{
     
     override func tableView(tableView: UITableView, heightForRowAtIndexPath indexPath:
         NSIndexPath) -> CGFloat {
-            
-            println("row height \(self.tableView.rowHeight)")
 
             return self.indexPathHasPicker(indexPath) ? self.dateCellRowHeight : 44
     }
@@ -388,6 +416,7 @@ extension SettingsTableVC: UICollectionViewDataSource{
             label.text = allWeekdays[indexPath.row].description()
         }
         
+        cell.layer.cornerRadius = 5.0
         
         return cell as UICollectionViewCell
         
