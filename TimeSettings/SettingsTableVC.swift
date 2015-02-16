@@ -87,9 +87,9 @@ class SettingsTableVC: UITableViewController {
         self.dateFormatter.timeStyle = NSDateFormatterStyle.ShortStyle
         self.dateFormatter.locale = NSLocale(localeIdentifier: "en_GB")
         
-        var date = self.dateFormatter.dateFromString("08:00")
-        
-        println("why -> \(date)")
+        //test
+//        var date = self.dateFormatter.dateFromString("08:00")
+//        println("why -> \(date)")
         
         self.dataArray = [SettingItem(title: "起床", date: self.dateFormatter.dateFromString("08:00")!),
                           SettingItem(title: "出社", date: self.dateFormatter.dateFromString("09:30")!),
