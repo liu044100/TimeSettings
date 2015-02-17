@@ -105,6 +105,7 @@ class SettingsTableVC: UITableViewController {
     
     func localChanged(notification: NSNotification){
         //user change local settings, update date formatter
+        println("localChanged:")
         self.tableView.reloadData()
     }
 
@@ -126,6 +127,8 @@ extension SettingsTableVC{
             let datePicker = sender as UIDatePicker
             
             self.dataArray[targetedCellIndexPath!.row].date = datePicker.date
+            
+            println("date picker -> \(datePicker.date)")
             
             cell?.detailTextLabel?.text = self.dateFormatter.stringFromDate(self.dataArray[targetedCellIndexPath!.row].date)
         }
@@ -186,7 +189,7 @@ extension SettingsTableVC{
             
             if let datePicker = datePickerBuffer as? UIDatePicker{
                 let itemData = self.dataArray[self.datePickerIndexPath!.row - 1]
-                
+                datePicker.locale = dateFormatter.locale
                 datePicker.setDate(itemData.date, animated: false)
             }
             
@@ -370,6 +373,8 @@ extension SettingsTableVC: UITableViewDataSource{
             println("cell.textLabel?.text -> \(cell.textLabel?.text)")
             
             let date = self.dataArray[forDataSourceIndex].date
+            
+            println("cell date -> \(date)")
             
             cell.detailTextLabel?.text = self.dateFormatter.stringFromDate(date)
             
