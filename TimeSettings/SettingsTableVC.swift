@@ -101,6 +101,8 @@ class SettingsTableVC: UITableViewController {
         self.weekDaysData = [.SAT, .SUN]
         
         NSNotificationCenter.defaultCenter().addObserver(self, selector: Selector("localChanged:"), name: NSCurrentLocaleDidChangeNotification, object: nil)
+
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: Selector("localChanged:"), name: NSSystemTimeZoneDidChangeNotification, object: nil)
     }
     
     func localChanged(notification: NSNotification){
