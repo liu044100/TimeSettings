@@ -383,12 +383,20 @@ extension SettingsTableVC: UITableViewDataSource{
         }else if cellID == kWeekCellID{
             cell.textLabel?.text = "休日"
             
-            weekDaysData.sort{$0.rawValue < $1.rawValue}
+            var detailStri: String!
             
-            cell.detailTextLabel?.text =  weekDaysData.reduce(""){
-                (detailString: String, weekday: Weekday) in
-                return countElements(detailString) == 0 ? "\(weekday.description())" : "\(detailString),\(weekday.description())"
+            if weekDaysData.count == 0{
+                detailStri = "無休"
+            }else{
+                weekDaysData.sort{$0.rawValue < $1.rawValue}
+                detailStri = weekDaysData.reduce(""){
+                    (detailString: String, weekday: Weekday) in
+                    return countElements(detailString) == 0 ? "\(weekday.description())" : "\(detailString),\(weekday.description())"
+            
+                }
             }
+            
+            cell.detailTextLabel?.text =  detailStri
             
             cell.layoutSubviews()
             
