@@ -390,6 +390,8 @@ extension SettingsTableVC: UITableViewDataSource{
                 return countElements(detailString) == 0 ? "\(weekday.description())" : "\(detailString),\(weekday.description())"
             }
             
+            cell.layoutSubviews()
+            
             println("cell.detailTextLabel -> \(cell.detailTextLabel?.text)")
         }
         
@@ -517,7 +519,7 @@ extension SettingsTableVC: UICollectionViewDelegate{
             return
         }
         
-        println("didSelectItemAtIndexPath -> \(indexPath.row)")
+        println("didSelect!!! -> \(indexPath.row)")
         
         selectedStyleForCell(cell)
         
@@ -531,7 +533,7 @@ extension SettingsTableVC: UICollectionViewDelegate{
     }
     
     func collectionView(collectionView: UICollectionView, didDeselectItemAtIndexPath indexPath: NSIndexPath) {
-        println("didDeselectItemAtIndexPath -> \(indexPath.row)")
+        println("didDeselect!!! -> \(indexPath.row)")
         
         let cell = collectionView.cellForItemAtIndexPath(indexPath) as UICollectionViewCell!
         
